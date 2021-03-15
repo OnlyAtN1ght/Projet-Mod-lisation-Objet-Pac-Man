@@ -1,3 +1,177 @@
 -- Modelisation PacMan
 --Alan PERRON / Simon PROVOT / Nicolas BLANCHARD
 
+
+model Pacman
+
+
+-- Classes
+
+class Entity
+attributes
+  x : Integer
+  y : Integer
+
+operations
+getX() : Integer
+  begin
+    result := self.x
+  end
+
+getY() : Integer
+  begin
+    result := self.y
+  end
+
+show()
+end
+
+
+class Character < Entity
+operations
+  move(dx : Integer, dy : Integer)
+  begin
+  	self.x := self.x + dx;
+  	self.y := self.y + dy
+  end
+end
+
+
+class Pacman < Character
+attributes
+  nb_lives : Integer
+  score :Integer
+
+operations
+  updateScore(new_score : Integer)
+  begin
+  	self.score := self.score + new_score
+  end
+
+  getScore() : Integer
+  begin
+    result := self.score
+  end
+end
+
+
+class Ghost < Character
+end
+
+
+class Rubber < Entity
+attributes
+  point : Integer
+
+operations
+  --disappear(p: Point)
+end
+
+
+class Wall < Entity
+end
+
+
+class Case
+operations
+	memeCase()
+
+end
+
+
+class Level
+attributes
+  id : Integer
+  number_rubbers : Integer
+end
+
+
+class Game
+attributes
+  high_score : Integer
+  initialLives : Integer
+
+operations
+  setHighScore(new_high_score : Integer)
+  begin
+  	self.high_score := new_high_score
+  end
+  
+  getHighScore() : Integer
+  begin
+    result := self.high_score
+  end
+end
+
+
+
+-- associations
+
+composition contain between
+  Level[1..*] role levels
+  Game[1] role game
+end
+
+association link between
+  Entity[0..*] role entities
+  Case[1] role case
+end	
+
+composition isComposed between 
+  Case[225] role cases
+  Level[1] role levels
+end
+
+
+constraints
+-- Invariants
+
+-- Pacman,Rubbers and Ghost can't be in walls
+context Wall inv carac_in_wall : 
+( not ( Wall.allInstances() -> exists(Character.allInstances() -> forAll(c | self.x <> c.x or self.y <> c.y)))) and ( not (Wall.allInstances() -> exists(Rubber.allInstances() -> forAll(r | self.x <> r.x or self.y <> r.y))))
+
+
+context Pacman inv pacman_collision_ghost : 
+(Pacman.allInstances() -> forAll(p | Ghost.allInstances() -> exists(self.x = p.x and self.y = p.y))) implies (Pacman.allInstances() -> forAll(p | p.nb_lives = p.nb_lives@pre - 1))
+
+--ICICICIICCIICCIICICICICICICICICICICICICIICICIC
+
+
+-- Pre, Post Conditions
+
+
+context Character::move(dx : Real, dy : Real)
+-- Les objects de types Characters ne peuvent que se deplacer d'une case verticalement ou horizontalement
+pre: (dx = 1 and dy = 0) or (dx = 0 and dy = 1)
+post: self.x = self.x@pre + dx 
+post: self.y = self.y@pre + dy
+
+
+context Entity::getX() : Integer
+post:result = self.x
+
+
+context Entity::getY() : Integer
+post:result = self.y
+
+
+context Pacman::updateScore(new_score : Integer)
+pre: new_score > 0
+post: self.score = new_score + self.score@pre
+
+
+context Pacman::getScore() : Integer
+post: result = self.score
+
+
+context Game::setHighScore(new_high_score : Integer)
+pre : new_high_score >= 0
+pre : new_high_score >= self.high_score
+post: self.high_score = new_high_score
+
+
+context Game::getHighScore() : Integer
+post: result = self.high_score
+
+
+

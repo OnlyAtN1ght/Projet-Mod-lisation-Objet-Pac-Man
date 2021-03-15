@@ -1,9 +1,0 @@
-class Pacman
-attributes
-  x : Real
-  y : Real
-  health : Integer
-
- operations
-
-end
