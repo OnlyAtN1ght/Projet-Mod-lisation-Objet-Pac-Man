@@ -6,8 +6,7 @@ model Pacman
 
 
 -- Classes
-
-class Entity
+abstract class Entity
 attributes
   x : Integer
   y : Integer
@@ -27,7 +26,7 @@ show()
 end
 
 
-class Character < Entity
+abstract class Character < Entity
 operations
   move(dx : Integer, dy : Integer)
   begin
@@ -52,6 +51,11 @@ operations
   begin
     result := self.score
   end
+
+  resetScore()
+  begin
+    self.score := 0
+  end
 end
 
 
@@ -61,10 +65,11 @@ end
 
 class Rubber < Entity
 attributes
-  point : Integer
+  score : Integer
+  isEaten : Boolean
 
 operations
-  --disappear(p: Point)
+  disappear()
 end
 
 
@@ -74,8 +79,6 @@ end
 
 class Case
 operations
-	memeCase()
-
 end
 
 
@@ -83,6 +86,21 @@ class Level
 attributes
   id : Integer
   number_rubbers : Integer
+operations
+  getNbRubber() : Integer
+  begin
+    result := self.number_rubbers
+  end
+
+  getId() : Integer
+  begin
+    result := self.id
+  end
+
+  setNbRubber(nb : Integer)
+  begin
+    self.number_rubbers := nb
+  end
 end
 
 
@@ -90,6 +108,7 @@ class Game
 attributes
   high_score : Integer
   initialLives : Integer
+  game_over : Boolean
 
 operations
   setHighScore(new_high_score : Integer)
@@ -108,70 +127,89 @@ end
 -- associations
 
 composition contain between
-  Level[1..*] role levels
   Game[1] role game
+  Level[1..*] role levels
 end
 
 association link between
   Entity[0..*] role entities
-  Case[1] role case
-end	
+  Case[1] role cases
+end
 
 composition isComposed between 
-  Case[225] role cases
   Level[1] role levels
+  Case[0..*] role grid --0 OR 225 (15*15 grid)
 end
 
 
 constraints
 -- Invariants
 
--- Pacman,Rubbers and Ghost can't be in walls
-context Wall inv carac_in_wall : 
-( not ( Wall.allInstances() -> exists(Character.allInstances() -> forAll(c | self.x <> c.x or self.y <> c.y)))) and ( not (Wall.allInstances() -> exists(Rubber.allInstances() -> forAll(r | self.x <> r.x or self.y <> r.y))))
+-- Pacman,Rubbers and Ghost can't be into walls
+--OK
+context Wall inv caracter_in_wall : 
+ ( Wall.allInstances() -> exists(Character.allInstances() -> 
+forAll(c | self.x <> c.x or self.y <> c.y)))
+and (Wall.allInstances() -> exists(Rubber.allInstances() -> forAll(r | (self.x <> r.x) or (self.y <> r.y))))
 
+-- If pacman hasnt enough life => game over
+--OK
+context Pacman inv gameover :
+Pacman.allInstances() -> forAll(p | p.nb_lives <= 0)
+implies (Game.allInstances() -> forAll(g | g.game_over = true))
 
-context Pacman inv pacman_collision_ghost : 
-(Pacman.allInstances() -> forAll(p | Ghost.allInstances() -> exists(self.x = p.x and self.y = p.y))) implies (Pacman.allInstances() -> forAll(p | p.nb_lives = p.nb_lives@pre - 1))
+-- The rubber's state change when it's been eaten.
+--OK
+--context Pacman inv eatRubberStateChange :
+--Pacman.allInstances() -> forAll(r | Rubber.allInstances() -> select((self.x = r.x) and (self.y = r.y)) -> forAll(r | r.isEaten = true))
 
---ICICICIICCIICCIICICICICICICICICICICICICIICICIC
+-- PRE / POST  CONDITION --
 
-
--- Pre, Post Conditions
-
-
+-- The object's types Characters can only move by one step on y and x axis.
+-- A Character cannot be on a wall case.
+--OK
 context Character::move(dx : Real, dy : Real)
--- Les objects de types Characters ne peuvent que se deplacer d'une case verticalement ou horizontalement
 pre: (dx = 1 and dy = 0) or (dx = 0 and dy = 1)
+pre: Wall.allInstances() -> select(self.x + dx = x and self.y + dy = y) -> isEmpty
 post: self.x = self.x@pre + dx 
 post: self.y = self.y@pre + dy
 
-
+--OK
 context Entity::getX() : Integer
 post:result = self.x
 
-
+--OK
 context Entity::getY() : Integer
 post:result = self.y
 
-
+--OK
 context Pacman::updateScore(new_score : Integer)
-pre: new_score > 0
+pre: new_score >= 0
 post: self.score = new_score + self.score@pre
 
-
+--OK
 context Pacman::getScore() : Integer
 post: result = self.score
 
-
+--OK
 context Game::setHighScore(new_high_score : Integer)
 pre : new_high_score >= 0
 pre : new_high_score >= self.high_score
 post: self.high_score = new_high_score
 
-
+--OK
 context Game::getHighScore() : Integer
 post: result = self.high_score
 
+--OK
+context Level::getNbRubber() : Integer
+post: result = self.number_rubbers
 
+--OK
+context Level::setNbRubber(nb : Integer)
+pre: nb >= 0
+post: self.number_rubbers = nb
 
+--OK
+context Level::getId() : Integer
+post: result = self.id
