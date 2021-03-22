@@ -1,0 +1,48 @@
+!new Game('game')
+!game.high_score := 0
+!game.initialLives := 1
+!game.game_over := false
+
+!new Level('l')
+!l.setNbRubber(1)
+!l.id := 1
+
+!insert (game,l) into contain
+
+!new Case('c1')
+!new Case('c2')
+!new Case('c3')
+!new Case('c4')
+
+!insert (l,c1) into isComposed
+!insert (l,c2) into isComposed
+!insert (l,c3) into isComposed
+!insert (l,c4) into isComposed
+
+!new Pacman('p')
+!p.x := 0
+!p.y := 2
+!p.nb_lives := game.initialLives
+!p.score := 0
+!insert (p,	c2) into link
+
+
+!new Ghost('g')
+!g.x := 0
+!g.y := 4
+!insert (g,	c1) into link
+
+
+!new Rubber('r')
+!r.x := 0
+!r.y := 3
+!r.score := 10
+!r.isEaten := false
+!insert (r,	c3) into link
+
+
+!new Wall('w')
+!w.x := 0
+!w.y := 1
+!insert (w,	c4) into link
+

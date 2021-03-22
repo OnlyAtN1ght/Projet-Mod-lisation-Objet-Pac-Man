@@ -56,6 +56,12 @@ operations
   begin
     self.score := 0
   end
+
+  -- ?????
+  lose_life()
+  begin
+  	self.nb_lives := self.nb_lives - 1
+  end
 end
 
 
@@ -70,6 +76,10 @@ attributes
 
 operations
   disappear()
+  -- ??????
+  begin
+  	self.isEaten := true
+  end
 end
 
 
@@ -169,7 +179,7 @@ implies (Game.allInstances() -> forAll(g | g.game_over = true))
 -- A Character cannot be on a wall case.
 --OK
 context Character::move(dx : Real, dy : Real)
-pre: (dx = 1 and dy = 0) or (dx = 0 and dy = 1)
+pre: (dx = 1 and dy = 0) or (dx = 0 and dy = 1) or (dx = 0 and dy = -1) or (dx = -1 and dy = 0)
 pre: Wall.allInstances() -> select(self.x + dx = x and self.y + dy = y) -> isEmpty
 post: self.x = self.x@pre + dx 
 post: self.y = self.y@pre + dy
