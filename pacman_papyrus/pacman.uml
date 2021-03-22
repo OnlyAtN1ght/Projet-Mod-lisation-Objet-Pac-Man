@@ -62,6 +62,7 @@
       </ownedParameter>
     </ownedOperation>
     <ownedOperation xmi:type="uml:Operation" xmi:id="_AwFjEIjbEeu4-N-hqyjIbQ" name="resetScore"/>
+    <ownedOperation xmi:type="uml:Operation" xmi:id="_ARbS8IsREeuPTKcAn4S-Gg" name="lose_life"/>
   </packagedElement>
   <packagedElement xmi:type="uml:Class" xmi:id="_XowBIIWfEeu9koThWL_eDw" name="Level">
     <ownedAttribute xmi:type="uml:Property" xmi:id="_eL5lEIWfEeu9koThWL_eDw" name="id" visibility="private">
@@ -108,7 +109,14 @@
       </ownedParameter>
     </ownedOperation>
   </packagedElement>
-  <packagedElement xmi:type="uml:Class" xmi:id="_bvZ-YIWoEeu7gprUYVt0yA" name="Case"/>
+  <packagedElement xmi:type="uml:Class" xmi:id="_bvZ-YIWoEeu7gprUYVt0yA" name="Case">
+    <ownedAttribute xmi:type="uml:Property" xmi:id="_WAO20IsTEeuqPskTFCt-6A" name="x">
+      <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:type="uml:Property" xmi:id="_bkM1sIsTEeuqPskTFCt-6A" name="y">
+      <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+    </ownedAttribute>
+  </packagedElement>
   <packagedElement xmi:type="uml:Association" xmi:id="_tmO2AIWoEeu7gprUYVt0yA" name="link" memberEnd="_tmQEIoWoEeu7gprUYVt0yA _tmQEJYWoEeu7gprUYVt0yA">
     <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_tmQEIIWoEeu7gprUYVt0yA" source="org.eclipse.papyrus">
       <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_tmQEIYWoEeu7gprUYVt0yA" key="nature" value="UML_Nature"/>

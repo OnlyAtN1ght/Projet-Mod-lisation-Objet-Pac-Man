@@ -57,7 +57,6 @@ operations
     self.score := 0
   end
 
-  -- ?????
   lose_life()
   begin
   	self.nb_lives := self.nb_lives - 1
@@ -76,7 +75,6 @@ attributes
 
 operations
   disappear()
-  -- ??????
   begin
   	self.isEaten := true
   end
@@ -88,7 +86,9 @@ end
 
 
 class Case
-operations
+attributes
+  x : Integer
+  y : Integer
 end
 
 
@@ -168,10 +168,9 @@ context Pacman inv gameover :
 Pacman.allInstances() -> forAll(p | p.nb_lives <= 0)
 implies (Game.allInstances() -> forAll(g | g.game_over = true))
 
--- The rubber's state change when it's been eaten.
---OK
---context Pacman inv eatRubberStateChange :
---Pacman.allInstances() -> forAll(r | Rubber.allInstances() -> select((self.x = r.x) and (self.y = r.y)) -> forAll(r | r.isEaten = true))
+-- For each case, x and y are the same as x and y from the entity.
+context Case inv xAndy :
+Case.allInstances() -> forAll (c | c.entities -> forAll(e | e.x = c.x and e.y = c.y))
 
 -- PRE / POST  CONDITION --
 
